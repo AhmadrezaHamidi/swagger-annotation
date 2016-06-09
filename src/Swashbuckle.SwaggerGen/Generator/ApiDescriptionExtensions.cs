@@ -29,13 +29,13 @@ namespace Swashbuckle.SwaggerGen.Generator
             return builder.ToString();
         }
 
-        internal static IEnumerable<string> SupportedRequestMediaTypes(this ApiDescription apiDescription)
+        internal static IEnumerable<string> ConsumesMediaTypes(this ApiDescription apiDescription)
         {
             return apiDescription.SupportedRequestFormats
                 .Select(requestFormat => requestFormat.MediaType);
         }
 
-        internal static IEnumerable<string> SupportedResponseMediaTypes(this ApiDescription apiDescription)
+        internal static IEnumerable<string> ProducesMediaTypes(this ApiDescription apiDescription)
         {
             return apiDescription.SupportedResponseTypes
                 .SelectMany(responseType => responseType.ApiResponseFormats)

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Xunit;
 using Swashbuckle.Swagger.Model;
 using Swashbuckle.SwaggerGen.TestFixtures;
+using Newtonsoft.Json.Linq;
 
 namespace Swashbuckle.SwaggerGen.Generator
 {
@@ -234,7 +235,7 @@ namespace Swashbuckle.SwaggerGen.Generator
         [InlineData(nameof(FakeActions.ReturnsComplexType), "200", true)]
         [InlineData(nameof(FakeActions.ReturnsJObject), "200", true)]
         [InlineData(nameof(FakeActions.ReturnsActionResult), "204", false)]
-        public void GetSwagger_SetsResponseStatusCodeAndSchema_AccordingToActionReturnType(
+        public void GetSwagger_SetsSuccessResponseStatusCodeAndSchema_AccordingToActionReturnType(
             string actionFixtureName,
             string expectedStatusCode,
             bool expectsSchema)
@@ -252,6 +253,19 @@ namespace Swashbuckle.SwaggerGen.Generator
             else
                 Assert.Null(response.Schema);
         }
+
+        [Fact]
+        public void GetSwagger_SetsAdditionalReponses_IfActionDecoratedWithProducesResponseTypes()
+        {
+            var subject = Subject(setupApis: apis =>
+                apis.Add("GET", "collection", nameof(FakeActions.AnnotatedWithProducesResponseTypes)));
+
+            var swagger = subject.GetSwagger("v1");
+
+            var responses = swagger.Paths["/collection"].Get.Responses;
+            Assert.Equal(new[] { "201", "401", "403" }, responses.Keys.ToArray());
+        }
+
 
         [Fact]
         public void GetSwagger_SetsDeprecated_ForActionsMarkedObsolete()

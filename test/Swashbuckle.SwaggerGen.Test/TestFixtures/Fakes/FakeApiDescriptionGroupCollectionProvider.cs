@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.DataAnnotations.Internal;
 using Moq;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Swashbuckle.SwaggerGen.TestFixtures
 {
@@ -88,6 +89,11 @@ namespace Swashbuckle.SwaggerGen.TestFixtures
                 throw new InvalidOperationException(
                     string.Format("{0} is not declared in ControllerFixtures", controllerFixtureName));
             descriptor.ControllerTypeInfo = controllerType.GetTypeInfo();
+
+            descriptor.FilterDescriptors = descriptor.MethodInfo.GetCustomAttributes()
+                .Where(filter => typeof(IFilterMetadata).IsAssignableFrom(filter.GetType()))
+                .Select(filter => new FilterDescriptor((IFilterMetadata)filter, FilterScope.Action))
+                .ToList();
 
             return descriptor;
         }

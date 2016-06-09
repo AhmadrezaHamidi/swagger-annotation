@@ -135,23 +135,14 @@ namespace Swashbuckle.SwaggerGen.Generator
                 .Select(paramDesc => CreateParameter(paramDesc, schemaRegistry))
                 .ToList();
 
-            var responses = new Dictionary<string, Response>();
-            if (!apiDescription.SupportedResponseTypes.Any())
-                responses.Add("204", new Response { Description = "No Content" });
-            else
-            {
-                var description = apiDescription.SupportedResponseTypes.OrderBy(responseType => responseType.StatusCode).FirstOrDefault();
-                responses.Add("200", CreateSuccessResponse(description.Type, schemaRegistry));
-            }
-
             var operation = new Operation
             {
                 Tags = (groupName != null) ? new[] { groupName } : null,
                 OperationId = apiDescription.FriendlyId(),
-                Consumes = apiDescription.SupportedRequestMediaTypes().ToList(),
-                Produces = apiDescription.SupportedResponseMediaTypes().ToList(),
+                Consumes = apiDescription.ConsumesMediaTypes().ToList(),
+                Produces = apiDescription.ProducesMediaTypes().ToList(),
                 Parameters = parameters.Any() ? parameters : null, // parameters can be null but not empty
-                Responses = responses,
+                Responses = CreateResponses(apiDescription.SupportedResponseTypes, schemaRegistry),
                 Deprecated = apiDescription.IsObsolete()
             };
 
@@ -199,15 +190,25 @@ namespace Swashbuckle.SwaggerGen.Generator
             }
         }
 
-        private Response CreateSuccessResponse(Type responseType, ISchemaRegistry schemaRegistry)
+        private IDictionary<string, Response> CreateResponses(
+            IList<ApiResponseType> supportedResponseTypes, ISchemaRegistry schemaRegistry)
         {
-            return new Response
+            if (!supportedResponseTypes.Any())
             {
-                Description = "OK",
-                Schema = (responseType != null)
-                    ? schemaRegistry.GetOrRegister(responseType)
-                    : null
-            };
+                return new Dictionary<string, Response>
+                {
+                    { "204", new Response { Description = "No Content" } }
+                };
+            }
+
+            return supportedResponseTypes.ToDictionary(
+                responseType => responseType.StatusCode.ToString(),
+                responseType => new Response
+                {
+                    Description = responseType.StatusCode.ToString(),
+                    Schema = (responseType.Type == null) ? null : schemaRegistry.GetOrRegister(responseType.Type)
+                }
+            );
         }
     }
 }

@@ -74,6 +74,15 @@ namespace Swashbuckle.SwaggerGen.TestFixtures
         public void AcceptsGenericArrayType(KeyValuePair<string, string>[] param1)
         {}
 
+        [ProducesResponseType(typeof(ComplexType), 201)]
+        [ProducesResponseType(typeof(int), 401)]
+        [ProducesResponseType(typeof(int), 403)]
+        public IActionResult AnnotatedWithProducesResponseTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+
         /// <summary>
         /// summary for AnnotatedWithXml
         /// </summary>
