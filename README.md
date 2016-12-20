@@ -75,7 +75,7 @@ The steps described above will get you up and running with minimal setup. Howeve
     * [Omit Obsolete Operations and/or Schema Properties](#omit-obsolete-operations-andor-schema-properties)
     * [Omit Arbitrary Operations](#omit-arbitrary-operations)
     * [Customize Operation Tags (e.g. for UI Grouping)](#customize-operation-tags-eg-for-ui-grouping)
-    * [Change Operation Sort Order (e.g. for UI Sorting)](change-operation-sort-order-eg-for-ui-sorting)
+    * [Change Operation Sort Order (e.g. for UI Sorting)](#change-operation-sort-order-eg-for-ui-sorting)
     * [Customize Schema Id's](#customize-schema-ids)
     * [Customize Schema for Enum Types](#customize-schema-for-enum-types)
     * [Override Schema for Specific Types](#override-schema-for-specific-types)
@@ -87,7 +87,7 @@ The steps described above will get you up and running with minimal setup. Howeve
     * [List Multiple Swagger Documents](#list-multiple-swagger-documents)
     * [Apply swagger-ui Parameters](#apply-swagger-ui-parameters)
     * [Inject Custom CSS](#inject-custom-css)
-    * [Enable OAuth2.0 Flows](#configure-oauth20-flows)
+    * [Enable OAuth2.0 Flows](#enable-oauth20-flows)
 
 ## Swashbuckle.Swagger ##
 
@@ -670,7 +670,7 @@ app.UseSwaggerUi(c =>
 });
 ```
 
-Most of these are self explanatory and can be easily mapped back to the corresponding swagger-ui parameters. To inject custom JavaScript (i.e. _InjectOnCompleteJavaScript_ and _InjectOnFailureJavaScript_), you'll need to add the scripts to your application and then provide the relative paths as shown above. In ASP.NET Core, this is easily done by placing your script files in the _wwwroot_ folder.
+Most of these are self explanatory and can be easily mapped back to the corresponding swagger-ui docs. To inject custom JavaScript (i.e. _InjectOnCompleteJavaScript_ and _InjectOnFailureJavaScript_), you'll need to add the scripts to your application and then provide the relative paths as shown above. In ASP.NET Core, this is easily done by placing your script files in the _wwwroot_ folder.
 
 ### Inject Custom CSS ###
 
