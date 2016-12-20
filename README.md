@@ -61,33 +61,33 @@ Swashbuckle consists of three packages - a Swagger generator, middleware to expo
 
 The steps described above will get you up and running with minimal setup. However, Swashbuckle offers a lot of flexibility to customize as you see fit. Check out the table below for the full list of options:
 
-* [Swashbuckle.Swagger](#)
+* [Swashbuckle.Swagger](#swashbuckleswagger)
  
-    * [Change the Path for Swagger JSON Endpoints](#)
-    * [Dynamic Swagger with Request Context](#)
+    * [Change the Path for Swagger JSON Endpoints](#change-the-path-for-swagger-json-endpoints)
+    * [Dynamic Swagger with Request Context](#dynamic-swagger-with-request-context)
  
-* [Swashbuckle.SwaggerGen](#)
+* [Swashbuckle.SwaggerGen](#swashbuckleswaggergen)
  
-    * [List Operations Responses](#)
-    * [Include Descriptions from XML Comments](#)
-    * [Provide Global API Metadata](#)
-    * [Generate Multiple Swagger Documents](#)
-    * [Omit Obsolete Operations and/or Schema Properties](#)
-    * [Omit Arbitrary Operations](#)
-    * [Customize Operation Tags (e.g. for UI Grouping)](#)
-    * [Change Operation Sort Order (e.g. for UI Sorting)](#)
-    * [Customize Schema Id's](#)
-    * [Customize Schema for Enum Types](#)
-    * [Override Schema for Specific Types](#)
-    * [Extend Generator with Operation, Schema & Document Filters](#)
-    * [Add Security Definitions and Requirements](#)
+    * [List Operations Responses](#list-operation-responses)
+    * [Include Descriptions from XML Comments](#include-descriptions-from-xml-comments)
+    * [Provide Global API Metadata](#provide-global-api-metadata)
+    * [Generate Multiple Swagger Documents](#generate-multiple-swagger-documents)
+    * [Omit Obsolete Operations and/or Schema Properties](#omit-obsolete-operations-andor-schema-properties)
+    * [Omit Arbitrary Operations](#omit-arbitrary-operations)
+    * [Customize Operation Tags (e.g. for UI Grouping)](#customize-operation-tags-eg-for-ui-grouping)
+    * [Change Operation Sort Order (e.g. for UI Sorting)](change-operation-sort-order-eg-for-ui-sorting)
+    * [Customize Schema Id's](#customize-schema-ids)
+    * [Customize Schema for Enum Types](#customize-schema-for-enum-types)
+    * [Override Schema for Specific Types](#override-schema-for-specific-types)
+    * [Extend Generator with Operation, Schema & Document Filters](#extend-generator-with-operation-schema--document-filters)
+    * [Add Security Definitions and Requirements](#add-security-definitions-and-requirements)
 
-* [Swashbuckle.SwaggerUi](#)
-    * [Change Releative Path to the UI](#)
-    * [Support Multiple Swagger Documents](#)
-    * [Customize the swagger-ui Parameters](#)
-    * [Inject Custom CSS](#)
-    * [Enable OAuth2.0 Flows](#)
+* [Swashbuckle.SwaggerUi](#swashbuckleswaggerui)
+    * [Change Releative Path to the UI](#change-relative-path-to-the-ui)
+    * [List Multiple Swagger Documents](#list-multiple-swagger-documents)
+    * [Apply swagger-ui Parameters](#apply-swagger-ui-parameters)
+    * [Inject Custom CSS](#inject-custom-css)
+    * [Enable OAuth2.0 Flows](#configure-oauth20-flows)
 
 ## Swashbuckle.Swagger ##
 
@@ -640,7 +640,7 @@ app.UseSwaggerUi(c =>
 }
 ```
 
-### Support Multiple Swagger Documents ###
+### List Multiple Swagger Documents ###
 
 When enabling the middleware, you're required to specify one or more _SwaggerEndpoints_ (fully qualified or relative to the current host) to power the UI. If you provide multiple endpoints, they'll be listed in the top right corner of the page, allowing users to toggle between the different documents. For example, the following configuration could be used to document different versions of an API.
 
@@ -652,7 +652,7 @@ app.UseSwaggerUi(c =>
 }
 ```
 
-### Customize the swagger-ui Parameters ###
+### Apply swagger-ui Parameters ###
 
 The swagger-ui ships with it's own set of configuration parameters, all described here https://github.com/swagger-api/swagger-ui#swaggerui. In Swashbuckle, most of these are surfaced through the SwaggerUi middleware options:
 
@@ -684,4 +684,4 @@ app.UseSwaggerUi(c =>
 }
 ```
 
-### Configure OAuth2.0 Flows ###
+### Enable OAuth2.0 Flows ###
