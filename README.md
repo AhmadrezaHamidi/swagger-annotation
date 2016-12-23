@@ -19,7 +19,7 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
     Install-Package Swashbuckle
     ```
 
-2. In the _ConfigureServices_ method of _Startup.cs_, register the Swagger Generator, defining one or more Swagger documents.
+2. In the _ConfigureServices_ method of _Startup.cs_, register the Swagger generator, defining one or more Swagger documents.
 
     ```csharp
     services.AddSwaggerGen(c =>
@@ -47,14 +47,14 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
 
     _Now you can restart your application and check out the auto-generated, interactive docs at "/swagger"._
 
-# The Anatomy of Swashbuckle #
+# Swashbuckle Components #
 
 Swashbuckle consists of three packages - a Swagger generator, middleware to expose the generated Swagger as JSON endpoints and middleware to expose a swagger-ui that's powered by those endpoints. They can be installed together, via the "Swashbuckle" meta-package, or independently according to your specific requirements. See the table below for more details.
 
 |Package|Description|
 |---------|-----------|
-|__Swashbuckle.Swagger__|Exposes C# SwaggerDocuments as a JSON API. It expects an implementation of ISwaggerProvider to be registered and queries it to retrieve documents by name before returning as serialized JSON|
-|__Swashbuckle.SwaggerGen__|Injects an implementation of ISwaggerProvider that can be used by the above component. This particular implementation generates SwaggerDocument(s) directly from your routes, controllers and models|
+|__Swashbuckle.Swagger__|Exposes _SwaggerDocument_ objects as a JSON API. It expects an implementation of _ISwaggerProvider_ to be registered and queries it to retrieve documents by name before returning as serialized JSON|
+|__Swashbuckle.SwaggerGen__|Injects an implementation of _ISwaggerProvider_ that can be used by the above component. This particular implementation automatically generates _SwaggerDocument_(s) from your routes, controllers and models|
 |__Swashbuckle.SwaggerUi__|Exposes an embedded version of the swagger-ui. You specify the API endpoints where it can obtain Swagger JSON and it uses them to power interactive docs for your API|
 
 # Configuration & Customization #
@@ -64,7 +64,7 @@ The steps described above will get you up and running with minimal setup. Howeve
 * [Swashbuckle.Swagger](#swashbuckleswagger)
  
     * [Change the Path for Swagger JSON Endpoints](#change-the-path-for-swagger-json-endpoints)
-    * [Dynamic Swagger with Request Context](#dynamic-swagger-with-request-context)
+    * [Modify Swagger with Request Context](#modify-swagger-with-request-context)
  
 * [Swashbuckle.SwaggerGen](#swashbuckleswaggergen)
  
@@ -119,7 +119,7 @@ app.UseSwagger(documentFilter: (swaggerDoc, req) =>
 })
 ```
 
-The SwaggerDocument and the current HttpRequest are passed to the filter. This provides a lot of flexibilty. For example, you can assign the "host" property (as shown) or you could inspect session information or an Authoriation header and remove operations based on user permissions. 
+The _SwaggerDocument_ and the current _HttpRequest_ are passed to the filter. This provides a lot of flexibilty. For example, you can assign the "host" property (as shown) or you could inspect session information or an Authoriation header and remove operations based on user permissions. 
 
 ## Swashbuckle.SwaggerGen ##
 
@@ -227,11 +227,11 @@ To enhance the generated docs with human-friendly descriptions, you can annotate
 
 4. Rebuild your project to update the XML Comments file and navigate to the Swagger JSON endpoint. Note how the descriptions are mapped onto corresponding Swagger fields.
 
-_You can also provide Swagger Schema descriptions by annotating your API models and their properties with summary tags. If you have multiple XML comments files (e.g. separate libraries for controllers and models), you can invoke the IncludeXmlComments method multiple times and they will all be merged into the outputted Swagger JSON._
+_NOTE: You can also provide Swagger Schema descriptions by annotating your API models and their properties with summary tags. If you have multiple XML comments files (e.g. separate libraries for controllers and models), you can invoke the IncludeXmlComments method multiple times and they will all be merged into the outputted Swagger JSON._
 
 ### Provide Global API Metadata ###
 
-In addition to Paths, Operations and Responses, which Swashbuckle generates for you, Swagger also supports global metadata (see http://swagger.io/specification/#swaggerObject). For example, you can provide a full description for your API, termsOfService or even contact and licensing information:
+In addition to _Paths_, _Operations_ and _Responses_, which Swashbuckle generates for you, Swagger also supports global metadata (see http://swagger.io/specification/#swaggerObject). For example, you can provide a full description for your API, terms of service or even contact and licensing information:
 
 ```csharp
 c.SwaggerDoc("v1",
@@ -311,7 +311,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-_NOTE: To expose the interactive docs for both versions, you also need to configure the SwaggerUi middleware to list both versions_:
+_NOTE: If you're using the _SwaggerUi_ middleware, you'll need to specify the version endpoints you want to list:
 
 ```
 app.UseSwaggerUi(c =>
@@ -333,7 +333,7 @@ services.AddSwaggerGen(c =>
 };
 ```
 
-A similar approach can also be used to omit obsolete properties from Schema's in the Swagger output. That is, you can decorate model properties with the _ObsoleteAttribute_ and configure Swashbuckle to omit those properties when generating a corresponding JSON Schema:
+A similar approach can also be used to omit obsolete properties from Schema's in the Swagger output. That is, you can decorate model properties with the _ObsoleteAttribute_ and configure Swashbuckle to omit those properties when generating JSON Schemas:
 
 ```csharp
 services.AddSwaggerGen(c =>
@@ -384,7 +384,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ### Customize Operation Tags (e.g. for UI Grouping) ###
 
-The [Swagger spec](http://swagger.io/specification/) allows one or more "tags" to be assigned to an operation. The Swagger generator will assign the controller name as the default tag. This is particularly interesting if you're using the _SwaggerUi_ middleware as it will group operations in the UI by that value.
+The [Swagger spec](http://swagger.io/specification/) allows one or more "tags" to be assigned to an operation. The Swagger generator will assign the controller name as the default tag. This is particularly interesting if you're using the _SwaggerUi_ middleware as it uses this value to group operations.
 
 You can override the default tag by providing a function that applies tags by convention. For example, the following configuration will tag, and therefore group operations in the UI, by HTTP method:
 
@@ -437,9 +437,9 @@ services.AddSwaggerGen(c =>
 
 ### Customize Schema for Enum Types ###
 
-When describing parameters and responses, Swashbuckle does its best to reflect the application's serialization settings. For example, if the _CamelCaseContractResolver_ is enabled, Schema property names will be camelCased in the generated Swagger. If it's disabled, they'll be PascalCased.
+When describing parameters and responses, Swashbuckle does its best to reflect the application's serialization settings. For example, if the _CamelCaseContractResolver_ is enabled, Schema property names will be camelCased in the generated Swagger.
 
-Similarly for enum types, if the _StringEnumConverter_ is enabled, then the corresponding Schema's will list enum names. If not, they'll list the integer values.
+Similarly for enum types, if the _StringEnumConverter_ is enabled, then the corresponding Schema's will list enum names rather than integer values.
 
 For most cases this should be sufficient. However, if you need more control, Swashbuckle exposes the following options to override the default behavior:
 
@@ -479,7 +479,7 @@ services.AddSwaggerGen(c =>
 
 ### Extend Generator with Operation, Schema & Document Filters ###
 
-Swashbuckle exposes a filter pipeline that hooks into the generation process. Once generated, individual metadata objects are passed into the pipeline where they can be modified further. You can wire up one or more custom filters for Operation, Schema and Document objects:
+Swashbuckle exposes a filter pipeline that hooks into the generation process. Once generated, individual metadata objects are passed into the pipeline where they can be modified further. You can wire up one or more custom filters for _Operation_, _Schema_ and _Document_ objects:
 
 #### Operation Filters ####
 
@@ -511,7 +511,7 @@ services.AddSwaggerGen(c =>
 };
 ```
 
-_NOTE: Filter pipelines are DI-aware. That is, you can create filters with constructor parameters and if the corresponding types are registered with the DI framework, they'll be automatically injected when the filters are instantiated_
+_NOTE: Filter pipelines are DI-aware. That is, you can create filters with constructor parameters and if the parameter types are registered with the DI framework, they'll be automatically injected when the filters are instantiated_
 
 #### Schema Filters ####
 
@@ -547,7 +547,7 @@ services.AddSwaggerGen(c =>
 
 #### Document Filters ####
 
-Once a _Swagger Document_ has been generated, it too can be passed through a set of pre-configured Document Filters. This gives full control to modify the document however you see fit. To ensure you're still returning valid Swagger JSON, you should have a read through the [specification](http://swagger.io/specification/) before using this filter type.
+Once a _Swagger Document_ has been generated, it too can be passed through a set of pre-configured _Document_ Filters. This gives full control to modify the document however you see fit. To ensure you're still returning valid Swagger JSON, you should have a read through the [specification](http://swagger.io/specification/) before using this filter type.
 
 The example below provides a description for any tags that are assigned to operations in the document:
 
@@ -564,13 +564,13 @@ public class TagDescriptionsDocumentFilter : IDocumentFilter
 }
 ```
 
-_NOTE: If you're using the SwaggerUi middleware, this approach can be used to display additional descriptions beside each group of Operations._
+_NOTE: If you're using the SwaggerUi middleware, this filter can be used to display additional descriptions beside each group of Operations._
 
 ### Add Security Definitions and Requirements ###
 
-In Swagger, you can describe how your API is secured by defining one or more _Security Scheme's_ (e.g basic, api key, oauth etc.) and declaring which of those schemes are applicable globally OR for specific operations. For more details, take a look at the _securityDefinitions_ and _security_ fields in the [Swagger spec](http://swagger.io/specification/#swaggerObject).
+In Swagger, you can describe how your API is secured by defining one or more _Security Scheme's_ (e.g basic, api key, oauth etc.) and declaring which of those schemes are applicable globally OR for specific operations. For more details, take a look at the "securityDefinitions" and "security" fields in the [Swagger spec](http://swagger.io/specification/#swaggerObject).
 
-You can use some of the configuration options described above to include security metadata in the generated _Swagger Document_. The example below adds an [OAuth 2.0](https://oauth.net/2/) definition to the global metadata and a corresponding _Operation Filter_ that uses the presence of an _AuthorizeAttribute_ to determine which operations the scheme applies to.
+You can use some of the options described above to include security metadata in the generated _Swagger Document_. The example below adds an [OAuth 2.0](https://oauth.net/2/) definition to the global metadata and a corresponding _Operation Filter_ that uses the presence of an _AuthorizeAttribute_ to determine which operations the scheme applies to.
 
 ```csharp
 // Startup.cs
@@ -624,13 +624,13 @@ public class SecurityRequirementsOperationFilter : IOperationFilter
 }
 ```
 
-_NOTE: If you're using the SwaggerUi middleware, you can enable interactive OAuth2.0 flows that are powered by the emitted security metadata. See "Enabling OAuth2.0" for more details._ TODO:
+_NOTE: If you're using the SwaggerUi middleware, you can enable interactive OAuth2.0 flows that are powered by the emitted security metadata. See [Enabling OAuth2.0 Flows](#) for more details._
 
 ## Swashbuckle.SwaggerUi ##
 
 ### Change Relative Path to the UI ###
 
-By default, the Swagger UI will be exposed at "/swagger". If neccessary, you can easily alter this when enabling the SwaggerUi middleware:
+By default, the Swagger UI will be exposed at "/swagger". If neccessary, you can alter this when enabling the SwaggerUi middleware:
 
 ```csharp
 app.UseSwaggerUi(c =>
@@ -642,7 +642,7 @@ app.UseSwaggerUi(c =>
 
 ### List Multiple Swagger Documents ###
 
-When enabling the middleware, you're required to specify one or more _SwaggerEndpoints_ (fully qualified or relative to the current host) to power the UI. If you provide multiple endpoints, they'll be listed in the top right corner of the page, allowing users to toggle between the different documents. For example, the following configuration could be used to document different versions of an API.
+When enabling the middleware, you're required to specify one or more Swagger endpoints (fully qualified or relative to the current host) to power the UI. If you provide multiple endpoints, they'll be listed in the top right corner of the page, allowing users to toggle between the different documents. For example, the following configuration could be used to document different versions of an API.
 
 ```csharp
 app.UseSwaggerUi(c =>
@@ -670,7 +670,7 @@ app.UseSwaggerUi(c =>
 });
 ```
 
-Most of these are self explanatory and can be easily mapped back to the corresponding swagger-ui docs. To inject custom JavaScript (i.e. _InjectOnCompleteJavaScript_ and _InjectOnFailureJavaScript_), you'll need to add the scripts to your application and then provide the relative paths as shown above. In ASP.NET Core, this is easily done by placing your script files in the _wwwroot_ folder.
+Most of them are self explanatory, mapping back to the corresponding swagger-ui docs. To inject custom JavaScript (i.e. _InjectOnCompleteJavaScript_ and _InjectOnFailureJavaScript_), you'll need to add the scripts to your application and provide the relative paths as shown above. In ASP.NET Core, this is easily done by placing your script files in the _wwwroot_ folder.
 
 ### Inject Custom CSS ###
 
@@ -685,3 +685,16 @@ app.UseSwaggerUi(c =>
 ```
 
 ### Enable OAuth2.0 Flows ###
+
+The swagger-ui has built-in support to participate in OAuth2.0 authorization flows. It interacts with authorization and/or token endpoints, as specified in the Swagger JSON, to obtain access tokens for subsequent API calls. See [Adding Security Definitions and Requirements](#add-security-definitions-and-requirements) for an example of adding OAuth2.0 metadata to the generated Swagger.
+
+If you're Swagger endpoint includes the appropriate security metadata, you can enable the UI interaction as follows:
+
+```csharp
+app.UseSwaggerUi(c =>
+{
+    ...
+    // Provide client ID, client ID, realm and application name
+    c.ConfigureOAuth2("swagger-ui", "swagger-ui-secret", "swagger-ui-realm", "Swagger UI");
+}
+```
