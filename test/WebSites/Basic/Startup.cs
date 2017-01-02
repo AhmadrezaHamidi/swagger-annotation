@@ -76,12 +76,14 @@ namespace Basic
 
             app.UseSwagger(c =>
             {
+                c.RouteTemplate = "api-docs/{documentName}/swagger.json";
                 c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
             });
 
             app.UseSwaggerUi(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "V1 Docs");
+                c.RoutePrefix = "api-docs";
+                c.SwaggerEndpoint("/api-docs/v1/swagger.json", "V1 Docs");
             });
         }
 

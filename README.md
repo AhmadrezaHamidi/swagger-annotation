@@ -1,4 +1,4 @@
-Swashbuckle
+Swashbuckle.AspNetCore
 =========
 
 [![Build status](https://ci.appveyor.com/api/projects/status/xpsk2cj1xn12c0r7?svg=true)](https://ci.appveyor.com/project/domaindrivendev/ahoy)
@@ -13,10 +13,10 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
 
 # Getting Started #
 
-1. Install the standard Nuget package into your ASP.NET Core application.
+1. Install the standard Nuget package (currently pre-release) into your ASP.NET Core application.
 
     ```
-    Install-Package Swashbuckle
+    Install-Package Swashbuckle.AspNetCore -Pre
     ```
 
 2. In the _ConfigureServices_ method of _Startup.cs_, register the Swagger generator, defining one or more Swagger documents.
@@ -28,7 +28,21 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
     });
     ```
 
-3. In the _Configure_ method, insert middleware to expose the generated Swagger as JSON endpoint(s)
+3. Ensure your API actions and parameters are decorated with explicit "Http" and "From" bindings.
+
+    ```csharp
+    [HttpPost]
+    public void Create([FromBody]Product product)
+    ...
+
+    [HttpGet]
+    public IEnumerable<Product> Search([FromQuery]string keywords)
+    ...
+    ```
+
+    _NOTE: This is a pre-requisite to using Swashbuckle and the Swagger generator will raise an exception if they're omitted._
+
+4. In the _Configure_ method, insert middleware to expose the generated Swagger as JSON endpoint(s)
 
     ```csharp
     app.UseSwagger();
@@ -36,7 +50,7 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
 
     _At this point, you can spin up your application and view the generated Swagger JSON at "/swagger/v1/swagger.json."_
 
-4. Optionally insert the swagger-ui middleware if you want to expose interactive documentation, specifying the Swagger JSON endpoint(s) to power it from.
+5. Optionally insert the swagger-ui middleware if you want to expose interactive documentation, specifying the Swagger JSON endpoint(s) to power it from.
 
     ```csharp
     app.UseSwaggerUi(c =>
@@ -47,26 +61,26 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
 
     _Now you can restart your application and check out the auto-generated, interactive docs at "/swagger"._
 
-# Swashbuckle Components #
+# Components #
 
-Swashbuckle consists of three packages - a Swagger generator, middleware to expose the generated Swagger as JSON endpoints and middleware to expose a swagger-ui that's powered by those endpoints. They can be installed together, via the "Swashbuckle" meta-package, or independently according to your specific requirements. See the table below for more details.
+Swashbuckle consists of three packages - a Swagger generator, middleware to expose the generated Swagger as JSON endpoints and middleware to expose a swagger-ui that's powered by those endpoints. They can be installed together, via the "Swashbuckle.AspNetCore" meta-package, or independently according to your specific requirements. See the table below for more details.
 
 |Package|Description|
 |---------|-----------|
-|__Swashbuckle.Swagger__|Exposes _SwaggerDocument_ objects as a JSON API. It expects an implementation of _ISwaggerProvider_ to be registered and queries it to retrieve documents by name before returning as serialized JSON|
-|__Swashbuckle.SwaggerGen__|Injects an implementation of _ISwaggerProvider_ that can be used by the above component. This particular implementation automatically generates _SwaggerDocument_(s) from your routes, controllers and models|
-|__Swashbuckle.SwaggerUi__|Exposes an embedded version of the swagger-ui. You specify the API endpoints where it can obtain Swagger JSON and it uses them to power interactive docs for your API|
+|__Swashbuckle.AspNetCore.Swagger__|Exposes _SwaggerDocument_ objects as a JSON API. It expects an implementation of _ISwaggerProvider_ to be registered and queries it to retrieve documents by name before returning as serialized JSON|
+|__Swashbuckle.AspNetCore.SwaggerGen__|Injects an implementation of _ISwaggerProvider_ that can be used by the above component. This particular implementation automatically generates _SwaggerDocument_(s) from your routes, controllers and models|
+|__Swashbuckle.AspNetCore.SwaggerUi__|Exposes an embedded version of the swagger-ui. You specify the API endpoints where it can obtain Swagger JSON and it uses them to power interactive docs for your API|
 
 # Configuration & Customization #
 
 The steps described above will get you up and running with minimal setup. However, Swashbuckle offers a lot of flexibility to customize as you see fit. Check out the table below for the full list of options:
 
-* [Swashbuckle.Swagger](#swashbuckleswagger)
+* [Swashbuckle.AspNetCore.Swagger](#swashbuckleaspnetcoreswagger)
  
     * [Change the Path for Swagger JSON Endpoints](#change-the-path-for-swagger-json-endpoints)
     * [Modify Swagger with Request Context](#modify-swagger-with-request-context)
  
-* [Swashbuckle.SwaggerGen](#swashbuckleswaggergen)
+* [Swashbuckle.AspNetCore.SwaggerGen](#swashbuckleaspnetcoreswaggergen)
  
     * [List Operations Responses](#list-operation-responses)
     * [Include Descriptions from XML Comments](#include-descriptions-from-xml-comments)
@@ -82,21 +96,24 @@ The steps described above will get you up and running with minimal setup. Howeve
     * [Extend Generator with Operation, Schema & Document Filters](#extend-generator-with-operation-schema--document-filters)
     * [Add Security Definitions and Requirements](#add-security-definitions-and-requirements)
 
-* [Swashbuckle.SwaggerUi](#swashbuckleswaggerui)
+* [Swashbuckle.AspNetCore.SwaggerUi](#swashbuckleaspnetcoreswaggerui)
     * [Change Releative Path to the UI](#change-relative-path-to-the-ui)
     * [List Multiple Swagger Documents](#list-multiple-swagger-documents)
     * [Apply swagger-ui Parameters](#apply-swagger-ui-parameters)
     * [Inject Custom CSS](#inject-custom-css)
     * [Enable OAuth2.0 Flows](#enable-oauth20-flows)
 
-## Swashbuckle.Swagger ##
+## Swashbuckle.AspNetCore.Swagger ##
 
 ### Change the Path for Swagger JSON Endpoints ###
 
-By default, Swagger JSON will be exposed at the following route - "/swagger/{documentName}/swagger.json". If neccessary, you can alter this when enabling the Swagger middleware. Custom routes MUST include the {documentName} parameter.
+By default, Swagger JSON will be exposed at the following route - "/swagger/{documentName}/swagger.json". If neccessary, you can change this when enabling the Swagger middleware. Custom routes MUST include the {documentName} parameter.
 
 ```csharp
-app.UseSwagger("api-docs/{documentName}.json");
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "api-docs/{documentName}/swagger.json";
+});
 ```
 
 _NOTE: If you're using the SwaggerUi middleware, you'll also need to update it's configuration to reflect the new endpoints:_
@@ -104,24 +121,24 @@ _NOTE: If you're using the SwaggerUi middleware, you'll also need to update it's
 ```csharp
 app.UseSwaggerUi(c =>
 {
-    c.SwaggerEndpoint("/api-docs/v1.json", "My API V1");
+    c.SwaggerEndpoint("/api-docs/v1/swagger.json", "My API V1");
 })
 ```
 
-### Dynamic Swagger with Request Context ###
+### Modify Swagger with Request Context ###
 
-If you need to set some Swagger metadata based on the current request, you can configure a document filter that's executed prior to deserialization:
+If you need to set some Swagger metadata based on the current request, you can configure a filter that's executed prior to serializing the document. 
 
 ```csharp
-app.UseSwagger(documentFilter: (swaggerDoc, req) =>
+app.UseSwagger(c =>
 {
-    swaggerDoc.Host = req.Host.Value;
-})
+    c.PreSerializeFilters.Add((swaggerDoc, httpReq) => swaggerDoc.Host = httpReq.Host.Value);
+});
 ```
 
-The _SwaggerDocument_ and the current _HttpRequest_ are passed to the filter. This provides a lot of flexibilty. For example, you can assign the "host" property (as shown) or you could inspect session information or an Authoriation header and remove operations based on user permissions. 
+The _SwaggerDocument_ and the current _HttpRequest_ are passed to the filter. This provides a lot of flexibilty. For example, you can assign the "host" property (as shown) or you could inspect session information or an Authoriation header and remove operations int the document based on user permissions. 
 
-## Swashbuckle.SwaggerGen ##
+## Swashbuckle.AspNetCore.SwaggerGen ##
 
 ### List Operation Responses ###
 
@@ -635,7 +652,7 @@ By default, the Swagger UI will be exposed at "/swagger". If neccessary, you can
 ```csharp
 app.UseSwaggerUi(c =>
 {
-    c.BasePath = "api-docs"
+    c.RoutePrefix = "api-docs"
     ...
 }
 ```
