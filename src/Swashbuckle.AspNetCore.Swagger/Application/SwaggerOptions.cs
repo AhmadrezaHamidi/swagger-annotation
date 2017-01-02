@@ -11,7 +11,7 @@ namespace Swashbuckle.AspNetCore.Swagger
             PreSerializeFilters = new List<Action<SwaggerDocument, HttpRequest>>();
         }
 
-        public string RouteTemplate { get; set; } = "api-docs/{documentName}/swagger.json";
+        public string RouteTemplate { get; set; } = "swagger/{documentName}/swagger.json";
 
         public List<Action<SwaggerDocument, HttpRequest>> PreSerializeFilters { get; private set; }
     }
