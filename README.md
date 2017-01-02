@@ -40,7 +40,7 @@ Once you have an API that can describe itself in Swagger, you've opened the trea
     ...
     ```
 
-    _NOTE: This is a pre-requisite to using Swashbuckle and the Swagger generator will raise an exception if they're omitted._
+    _This is a pre-requisite to using Swashbuckle and the Swagger generator will raise an exception if they're omitted._
 
 4. In the _Configure_ method, insert middleware to expose the generated Swagger as JSON endpoint(s)
 
@@ -643,7 +643,7 @@ public class SecurityRequirementsOperationFilter : IOperationFilter
 
 _NOTE: If you're using the SwaggerUi middleware, you can enable interactive OAuth2.0 flows that are powered by the emitted security metadata. See [Enabling OAuth2.0 Flows](#) for more details._
 
-## Swashbuckle.SwaggerUi ##
+## Swashbuckle.AspNetCore.SwaggerUi ##
 
 ### Change Relative Path to the UI ###
 
