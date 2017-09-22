@@ -64,9 +64,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
                 .ApiDescriptionGroups.Items.First()
                 .Items.First();
 
-            return new OperationFilterContext(
-                apiDescription,
-                new SchemaRegistry(new JsonSerializerSettings()));
+            return new OperationFilterContext(apiDescription, null, null);
         }
 
         private SwaggerAttributesOperationFilter Subject()

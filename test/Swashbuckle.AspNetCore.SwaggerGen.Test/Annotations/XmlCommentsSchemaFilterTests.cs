@@ -55,7 +55,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
         private SchemaFilterContext FilterContextFor(Type type)
         {
             var jsonObjectContract = new DefaultContractResolver().ResolveContract(type);
-            return new SchemaFilterContext(type, (jsonObjectContract as JsonObjectContract), null);
+            return new SchemaFilterContext(type, (jsonObjectContract as JsonObjectContract), null, null);
         }
 
         private XmlCommentsSchemaFilter Subject()

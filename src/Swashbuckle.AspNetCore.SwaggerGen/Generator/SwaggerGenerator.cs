@@ -11,16 +11,16 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
     public class SwaggerGenerator : ISwaggerProvider
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
-        private readonly ISchemaRegistryFactory _schemaRegistryFactory;
+        private readonly ISchemaProvider _schemaProvider;
         private readonly SwaggerGeneratorSettings _settings;
 
         public SwaggerGenerator(
             IApiDescriptionGroupCollectionProvider apiDescriptionsProvider,
-            ISchemaRegistryFactory schemaRegistryFactory,
+            ISchemaProvider schemaProvider,
             SwaggerGeneratorSettings settings = null)
         {
             _apiDescriptionsProvider = apiDescriptionsProvider;
-            _schemaRegistryFactory = schemaRegistryFactory;
+            _schemaProvider = schemaProvider;
             _settings = settings ?? new SwaggerGeneratorSettings();
         }
 
@@ -30,7 +30,8 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             string basePath = null,
             string[] schemes = null)
         {
-            var schemaRegistry = _schemaRegistryFactory.Create();
+            // Create a dictionary for collecting Schema definitions that are scoped to this document
+            var definitions = new Dictionary<string, Schema>();
 
             Info info;
             if (!_settings.SwaggerDocs.TryGetValue(documentName, out info))
@@ -44,7 +45,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
 
             var paths = apiDescriptions
                 .GroupBy(apiDesc => apiDesc.RelativePathSansQueryString())
-                .ToDictionary(group => "/" + group.Key, group => CreatePathItem(group, schemaRegistry));
+                .ToDictionary(group => "/" + group.Key, group => CreatePathItem(group, definitions));
 
             var swaggerDoc = new SwaggerDocument
             {
@@ -53,13 +54,14 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 BasePath = basePath,
                 Schemes = schemes,
                 Paths = paths,
-                Definitions = schemaRegistry.Definitions,
+                Definitions = definitions,
                 SecurityDefinitions = _settings.SecurityDefinitions
             };
 
             var filterContext = new DocumentFilterContext(
                 _apiDescriptionsProvider.ApiDescriptionGroups,
-                schemaRegistry);
+                _schemaProvider,
+                definitions);
 
             foreach (var filter in _settings.DocumentFilters)
             {
@@ -69,7 +71,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             return swaggerDoc;
         }
 
-        private PathItem CreatePathItem(IEnumerable<ApiDescription> apiDescriptions, ISchemaRegistry schemaRegistry)
+        private PathItem CreatePathItem(IEnumerable<ApiDescription> apiDescriptions, IDictionary<string, Schema> definitions)
         {
             var pathItem = new PathItem();
 
@@ -100,25 +102,25 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 switch (httpMethod)
                 {
                     case "GET":
-                        pathItem.Get = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Get = CreateOperation(apiDescription, definitions);
                         break;
                     case "PUT":
-                        pathItem.Put = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Put = CreateOperation(apiDescription, definitions);
                         break;
                     case "POST":
-                        pathItem.Post = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Post = CreateOperation(apiDescription, definitions);
                         break;
                     case "DELETE":
-                        pathItem.Delete = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Delete = CreateOperation(apiDescription, definitions);
                         break;
                     case "OPTIONS":
-                        pathItem.Options = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Options = CreateOperation(apiDescription, definitions);
                         break;
                     case "HEAD":
-                        pathItem.Head = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Head = CreateOperation(apiDescription, definitions);
                         break;
                     case "PATCH":
-                        pathItem.Patch = CreateOperation(apiDescription, schemaRegistry);
+                        pathItem.Patch = CreateOperation(apiDescription, definitions);
                         break;
                 }
             }
@@ -126,18 +128,18 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             return pathItem;
         }
 
-        private Operation CreateOperation(ApiDescription apiDescription, ISchemaRegistry schemaRegistry)
+        private Operation CreateOperation(ApiDescription apiDescription, IDictionary<string, Schema> definitions)
         {
             var parameters = apiDescription.ParameterDescriptions
                 .Where(paramDesc => paramDesc.Source.IsFromRequest && !paramDesc.IsPartOfCancellationToken())
-                .Select(paramDesc => CreateParameter(apiDescription, paramDesc, schemaRegistry))
+                .Select(paramDesc => CreateParameter(apiDescription, paramDesc, definitions))
                 .ToList();
 
             var responses = apiDescription.SupportedResponseTypes
                 .DefaultIfEmpty(new ApiResponseType { StatusCode = 200 })
                 .ToDictionary(
                     apiResponseType => apiResponseType.StatusCode.ToString(),
-                    apiResponseType => CreateResponse(apiResponseType, schemaRegistry)
+                    apiResponseType => CreateResponse(apiResponseType, definitions)
                  );
 
             var operation = new Operation
@@ -151,7 +153,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 Deprecated = apiDescription.IsObsolete() ? true : (bool?)null
             };
 
-            var filterContext = new OperationFilterContext(apiDescription, schemaRegistry);
+            var filterContext = new OperationFilterContext(apiDescription, _schemaProvider, definitions);
             foreach (var filter in _settings.OperationFilters)
             {
                 filter.Apply(operation, filterContext);
@@ -163,7 +165,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
         private IParameter CreateParameter(
             ApiDescription apiDescription,
             ApiParameterDescription paramDescription,
-            ISchemaRegistry schemaRegistry)
+            IDictionary<string, Schema> definitions)
         {
             var location = GetParameterLocation(apiDescription, paramDescription);
 
@@ -171,7 +173,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 ? paramDescription.Name.ToCamelCase()
                 : paramDescription.Name;
 
-            var schema = (paramDescription.Type == null) ? null : schemaRegistry.GetOrRegister(paramDescription.Type);
+            var schema = (paramDescription.Type == null) ? null : _schemaProvider.GetSchema(paramDescription.Type, definitions);
 
             if (location == "body")
             {
@@ -219,7 +221,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             return "query";
         }
 
-        private Response CreateResponse(ApiResponseType apiResponseType, ISchemaRegistry schemaRegistry)
+        private Response CreateResponse(ApiResponseType apiResponseType, IDictionary<string, Schema> definitions)
         {
             var description = ResponseDescriptionMap
                 .FirstOrDefault((entry) => Regex.IsMatch(apiResponseType.StatusCode.ToString(), entry.Key))
@@ -229,7 +231,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             {
                 Description = description,
                 Schema = (apiResponseType.Type != null && apiResponseType.Type != typeof(void))
-                    ? schemaRegistry.GetOrRegister(apiResponseType.Type)
+                    ? _schemaProvider.GetSchema(apiResponseType.Type, definitions)
                     : null
             };
         }

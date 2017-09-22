@@ -30,7 +30,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
 
         private SchemaFilterContext FilterContextFor(Type type)
         {
-            return new SchemaFilterContext(type, null, null);
+            return new SchemaFilterContext(type, null, null, null);
         }
 
         private SwaggerAttributesSchemaFilter Subject()

@@ -109,7 +109,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
                 .ApiDescriptionGroups.Items.First()
                 .Items.First();
 
-            return new OperationFilterContext(apiDescription, null);
+            return new OperationFilterContext(apiDescription, null, null);
         }
 
         private XmlCommentsOperationFilter Subject()

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Xunit;
 using Swashbuckle.AspNetCore.Swagger;
@@ -16,7 +17,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             };
             var filterContext = this.FilterContextFor(nameof(FakeActions.AnnotatedWithSwaggerResponseAttributes));
 
-            this.Subject().Apply(operation, filterContext);
+            Subject().Apply(operation, filterContext);
 
             var responses = operation.Responses;
             Assert.Equal(new[] { "204", "400" }, responses.Keys.ToArray());
@@ -38,9 +39,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
                 .ApiDescriptionGroups.Items.First()
                 .Items.First();
 
-            return new OperationFilterContext(
-                apiDescription,
-                new SchemaRegistry(new JsonSerializerSettings()));
+            return new OperationFilterContext(apiDescription, null, null);
         }
 
         private SwaggerResponseAttributeFilter Subject()

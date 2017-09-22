@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OAuth2Integration", "test\W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swashbuckle.AspNetCore", "src\Swashbuckle.AspNetCore\Swashbuckle.AspNetCore.csproj", "{7D077710-1B4A-4DEC-96E9-CE6192D4493D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreLatest", "test\WebSites\AspNetCoreLatest\AspNetCoreLatest.csproj", "{25E8270A-AF8E-4475-A758-D3D3BEC72420}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreLatest", "test\WebSites\AspNetCoreLatest\AspNetCoreLatest.csproj", "{25E8270A-AF8E-4475-A758-D3D3BEC72420}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

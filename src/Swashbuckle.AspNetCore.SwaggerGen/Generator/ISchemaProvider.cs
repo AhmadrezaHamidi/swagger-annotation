@@ -4,10 +4,8 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace Swashbuckle.AspNetCore.SwaggerGen
 {
-    public interface ISchemaRegistry
+    public interface ISchemaProvider
     {
-        Schema GetOrRegister(Type type);
-
-        IDictionary<string, Schema> Definitions { get; }
+        Schema GetSchema(Type type, IDictionary<string, Schema> definitions);
     }
 }

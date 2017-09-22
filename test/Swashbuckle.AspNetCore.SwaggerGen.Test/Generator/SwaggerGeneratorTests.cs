@@ -194,8 +194,8 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
             Assert.Equal("param", bodyParam.Name);
             Assert.Equal("body", bodyParam.In);
             Assert.NotNull(bodyParam.Schema);
-            Assert.Equal("#/definitions/ComplexType", bodyParam.Schema.Ref);
-            Assert.Contains("ComplexType", swagger.Definitions.Keys);
+            Assert.Equal("#/definitions/Swashbuckle.AspNetCore.SwaggerGen.Test.ComplexType", bodyParam.Schema.Ref);
+            Assert.Contains("Swashbuckle.AspNetCore.SwaggerGen.Test.ComplexType", swagger.Definitions.Keys);
         }
 
         [Fact]
@@ -597,7 +597,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen.Test
 
             return new SwaggerGenerator(
                 apiDescriptionsProvider,
-                new SchemaRegistryFactory(new JsonSerializerSettings(), new SchemaRegistrySettings()),
+                new SchemaGenerator(new JsonSerializerSettings(), new SchemaRegistrySettings()),
                 options
             );
         }

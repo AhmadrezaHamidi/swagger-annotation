@@ -241,14 +241,14 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 schemaRegistrySettings.SchemaFilters.Insert(0, new XmlCommentsSchemaFilter(xmlDoc));
             }
 
-            var schemaRegistryFactory = new SchemaRegistryFactory(
+            var schemaProvider = new SchemaGenerator(
                 serviceProvider.GetRequiredService<IOptions<MvcJsonOptions>>().Value.SerializerSettings,
                 schemaRegistrySettings
             );
 
             return new SwaggerGenerator(
                 serviceProvider.GetRequiredService<IApiDescriptionGroupCollectionProvider>(),
-                schemaRegistryFactory,
+                schemaProvider,
                 swaggerGeneratorSettings
             );
         }
