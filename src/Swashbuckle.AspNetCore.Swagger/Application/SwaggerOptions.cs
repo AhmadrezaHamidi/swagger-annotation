@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 
 namespace Swashbuckle.AspNetCore.Swagger
 {
@@ -8,7 +9,7 @@ namespace Swashbuckle.AspNetCore.Swagger
     {
         public SwaggerOptions()
         {
-            PreSerializeFilters = new List<Action<SwaggerDocument, HttpRequest>>();
+            PreSerializeFilters = new List<Action<JObject, HttpRequest>>();
         }
 
         /// <summary>
@@ -20,6 +21,6 @@ namespace Swashbuckle.AspNetCore.Swagger
         /// Actions that can be applied SwaggerDocument's before they're serialized to JSON.
         /// Useful for setting metadata that's derived from the current request
         /// </summary>
-        public List<Action<SwaggerDocument, HttpRequest>> PreSerializeFilters { get; private set; }
+        public List<Action<JObject, HttpRequest>> PreSerializeFilters { get; private set; }
     }
 }

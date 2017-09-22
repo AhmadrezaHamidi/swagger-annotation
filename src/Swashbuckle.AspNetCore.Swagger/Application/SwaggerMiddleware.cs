@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Routing;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Swashbuckle.AspNetCore.Swagger
 {
@@ -14,8 +14,8 @@ namespace Swashbuckle.AspNetCore.Swagger
     {
         private readonly RequestDelegate _next;
         private readonly ISwaggerProvider _swaggerProvider;
-        private readonly JsonSerializer _swaggerSerializer;
         private readonly SwaggerOptions _options;
+        private readonly JsonSerializer _swaggerSerializer;
         private readonly TemplateMatcher _requestMatcher;
 
         public SwaggerMiddleware(
@@ -26,8 +26,8 @@ namespace Swashbuckle.AspNetCore.Swagger
         {
             _next = next;
             _swaggerProvider = swaggerProvider;
-            _swaggerSerializer = SwaggerSerializerFactory.Create(mvcJsonOptions);
             _options = options;
+            _swaggerSerializer = SwaggerSerializerFactory.Create(mvcJsonOptions);
             _requestMatcher = new TemplateMatcher(TemplateParser.Parse(options.RouteTemplate), new RouteValueDictionary());
         }
 
@@ -67,7 +67,7 @@ namespace Swashbuckle.AspNetCore.Swagger
             return true;
         }
 
-        private void RespondWithSwaggerJson(HttpResponse response, SwaggerDocument swagger)
+        private void RespondWithSwaggerJson(HttpResponse response, JObject swagger)
         {
             response.StatusCode = 200;
             response.ContentType = "application/json";

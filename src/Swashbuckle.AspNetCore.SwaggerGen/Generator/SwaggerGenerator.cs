@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Swashbuckle.AspNetCore.SwaggerGen
@@ -24,7 +25,7 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
             _settings = settings ?? new SwaggerGeneratorSettings();
         }
 
-        public SwaggerDocument GetSwagger(
+        public JObject GetSwagger(
             string documentName,
             string host = null,
             string basePath = null,
@@ -46,16 +47,16 @@ namespace Swashbuckle.AspNetCore.SwaggerGen
                 .GroupBy(apiDesc => apiDesc.RelativePathSansQueryString())
                 .ToDictionary(group => "/" + group.Key, group => CreatePathItem(group, schemaRegistry));
 
-            var swaggerDoc = new SwaggerDocument
+            var swaggerDoc = JObject.FromObject(new
             {
-                Info = info,
-                Host = host,
-                BasePath = basePath,
-                Schemes = schemes,
-                Paths = paths,
-                Definitions = schemaRegistry.Definitions,
-                SecurityDefinitions = _settings.SecurityDefinitions
-            };
+                info = info,
+                host = host,
+                basePath = basePath,
+                schemes = schemes,
+                paths = paths,
+                definitions = schemaRegistry.Definitions,
+                securityDefinitions = _settings.SecurityDefinitions
+            });
 
             var filterContext = new DocumentFilterContext(
                 _apiDescriptionsProvider.ApiDescriptionGroups,

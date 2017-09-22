@@ -1,10 +1,11 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 
 namespace Swashbuckle.AspNetCore.Swagger
 {
     public interface ISwaggerProvider
     {
-        SwaggerDocument GetSwagger(
+        JObject GetSwagger(
             string documentName,
             string host = null,
             string basePath = null,
