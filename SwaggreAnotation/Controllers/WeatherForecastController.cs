@@ -43,10 +43,10 @@ namespace SwaggreAnotation.Controllers
 
         [HttpGet(Name = "GetHuman")]
         [SwaggerOperation(
-Summary = "GetHuman",
-Description = "GetHuman",
-OperationId = "d5ea45d8-8e78-4d4c-b4b1-f7ee72679ce9",
-    Tags = new[] { "WeatherForecastController" })]
+            Summary = "GetHumanSummery",   
+            Description = "GetHumanDescrption",
+            OperationId = "d5ea45d8-8e78-4d4c-b4b1-f7ee72679ce9",
+            Tags = new[] { "WeatherForecastController" })]
         public HUmanDto GetHuman()
         {
             var instanceHuman = new Human("vestaabner", "mazadak nzaemi is a good man ");

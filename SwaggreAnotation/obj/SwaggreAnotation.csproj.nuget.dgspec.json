@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\SwaggreAnotation.csproj": {}
+    "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\SwaggreAnotation.csproj": {}
   },
   "projects": {
-    "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\SwaggreAnotation.csproj": {
+    "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\SwaggreAnotation.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\SwaggreAnotation.csproj",
+        "projectUniqueName": "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\SwaggreAnotation.csproj",
         "projectName": "SwaggreAnotation",
-        "projectPath": "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\SwaggreAnotation.csproj",
+        "projectPath": "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\SwaggreAnotation.csproj",
         "packagesPath": "C:\\Users\\a.hamidi\\.nuget\\packages\\",
-        "outputPath": "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\obj\\",
+        "outputPath": "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\a.hamidi\\AppData\\Roaming\\NuGet\\NuGet.Config",

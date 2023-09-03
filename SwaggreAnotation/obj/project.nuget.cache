@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bx/g6clM0wiB6TD4MHEtxRqlD/7v/x6APcMSSG9LStV9/IPeZkJPlUmbq9KOEWTjuU73CsOvEFeARuubTZhYRw==",
+  "dgSpecHash": "qDqAk3zpjyzokIVa2xQ9+fHvKj4p5px4GBql0VGnJk92206e4asp17ah042Jt+ygyyoWKzlDZsV8CRctSuqOJw==",
   "success": true,
-  "projectFilePath": "F:\\ExelReport\\SwaggreAnotation\\SwaggreAnotation\\SwaggreAnotation.csproj",
+  "projectFilePath": "F:\\Swashbuckle.AspNetCore\\SwaggreAnotation\\SwaggreAnotation.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\a.hamidi\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\a.hamidi\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
